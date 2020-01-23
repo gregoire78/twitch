@@ -102,7 +102,7 @@ export default class ChatClient extends IRCClient {
 	 * @param duration The duration of the timeout, in seconds.
 	 */
 	onTimeout: (
-		handler: (channel: string, user: string, reason: string, duration: number) => void
+		handler: (channel: string, user: string, reason: string, duration: number, msg: ClearChat) => void
 	) => Listener = this.registerEvent();
 
 	/**
@@ -113,7 +113,9 @@ export default class ChatClient extends IRCClient {
 	 * @param user The banned user.
 	 * @param reason The reason for the ban.
 	 */
-	onBan: (handler: (channel: string, user: string, reason: string) => void) => Listener = this.registerEvent();
+	onBan: (
+		handler: (channel: string, user: string, reason: string, msg: ClearChat) => void
+	) => Listener = this.registerEvent();
 
 	/**
 	 * Fires when a user upgrades their bits badge in a channel.
@@ -509,7 +511,14 @@ export default class ChatClient extends IRCClient {
 		handler: (channel: string, user: string, error?: string) => void
 	) => Listener = this.registerEvent();
 	private readonly _onTimeoutResult: (
-		handler: (channel: string, user: string, reason?: string, duration?: number, error?: string) => void
+		handler: (
+			channel: string,
+			user: string,
+			reason?: string,
+			duration?: number,
+			msg?: ClearChat,
+			error?: string
+		) => void
 	) => Listener = this.registerEvent();
 	private readonly _onUnbanResult: (
 		handler: (channel: string, user: string, error?: string) => void
@@ -646,17 +655,21 @@ export default class ChatClient extends IRCClient {
 			this._authFailureMessage = undefined;
 		});
 
-		this.onMessage(ClearChat, ({ params: { channel, user }, tags }) => {
+		this.onMessage(ClearChat, clearChat => {
+			const {
+				params: { channel, user },
+				tags
+			} = clearChat;
 			if (user) {
 				const duration = tags.get('ban-duration');
 				const reason = tags.get('ban-reason');
 				if (duration === undefined) {
 					// ban
-					this.emit(this.onBan, channel, user, reason);
+					this.emit(this.onBan, channel, user, reason, clearChat);
 				} else {
 					// timeout
-					this.emit(this.onTimeout, channel, user, reason, Number(duration));
-					this.emit(this._onTimeoutResult, channel, user, reason, Number(duration));
+					this.emit(this.onTimeout, channel, user, reason, Number(duration), clearChat);
+					this.emit(this._onTimeoutResult, channel, user, reason, Number(duration), clearChat);
 				}
 			} else {
 				// full chat clear
@@ -921,7 +934,11 @@ export default class ChatClient extends IRCClient {
 			this.emit(this.onWhisper, whisper.prefix!.nick, whisper.params.message, whisper);
 		});
 
-		this.onMessage(Notice, ({ params: { target: channel, message }, tags }) => {
+		this.onMessage(Notice, userNotice => {
+			const {
+				params: { target: channel, message },
+				tags
+			} = userNotice;
 			const messageType = tags.get('msg-id');
 
 			// this event handler involves a lot of parsing strings you shouldn't parse...
@@ -1179,13 +1196,22 @@ export default class ChatClient extends IRCClient {
 						this._credentials.nick,
 						undefined,
 						undefined,
+						undefined,
 						messageType
 					);
 					break;
 				}
 
 				case 'bad_timeout_broadcaster': {
-					this.emit(this._onTimeoutResult, channel, toUserName(channel), undefined, undefined, messageType);
+					this.emit(
+						this._onTimeoutResult,
+						channel,
+						toUserName(channel),
+						undefined,
+						undefined,
+						undefined,
+						messageType
+					);
 					break;
 				}
 
@@ -1198,6 +1224,7 @@ export default class ChatClient extends IRCClient {
 							this._onTimeoutResult,
 							channel,
 							match[1].toLowerCase(),
+							undefined,
 							undefined,
 							undefined,
 							messageType
