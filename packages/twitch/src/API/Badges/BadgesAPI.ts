@@ -37,16 +37,18 @@ export default class BadgesAPI extends BaseAPI {
 	 * @param includeGlobal Whether to include global badges in the result list.
 	 */
 	@Cached(3600)
-	async getChannelBadges(channel: UserIdResolvable, includeGlobal: boolean = true) {
+	async getChannelBadges(channel: UserIdResolvable, includeGlobal: boolean = true, language?: String) {
 		const data = await this._client.callAPI<{ badge_sets: ChatBadgeListData }>({
-			url: `https://badges.twitch.tv/v1/badges/channels/${extractUserId(channel)}/display`,
+			url: `https://badges.twitch.tv/v1/badges/channels/${extractUserId(channel)}/display${
+				language ? `?language=${language}` : ''
+			}`,
 			type: TwitchAPICallType.Custom
 		});
 
 		const channelBadges = new ChatBadgeList(data.badge_sets, this._client);
 
 		if (includeGlobal) {
-			return (await this.getGlobalBadges())._merge(channelBadges);
+			return (await this.getGlobalBadges(language))._merge(channelBadges);
 		}
 
 		return channelBadges;
