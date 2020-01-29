@@ -21,9 +21,9 @@ export default class BadgesAPI extends BaseAPI {
 	 * Retrieves all globally applicable chat badges.
 	 */
 	@Cached(3600)
-	async getGlobalBadges() {
+	async getGlobalBadges(language?: String) {
 		const data = await this._client.callAPI<{ badge_sets: ChatBadgeListData }>({
-			url: 'https://badges.twitch.tv/v1/badges/global/display',
+			url: `https://badges.twitch.tv/v1/badges/global/display${language ? `?language=${language}` : ''}`,
 			type: TwitchAPICallType.Custom
 		});
 
