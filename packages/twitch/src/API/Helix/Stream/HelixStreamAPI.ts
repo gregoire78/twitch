@@ -138,6 +138,15 @@ export default class HelixStreamAPI extends BaseAPI {
 	}
 
 	/**
+	 * Retrieves the current stream for the given user names.
+	 *
+	 * @param users The users name to retrieve the stream for.
+	 */
+	async getStreamByUserNames(users: UserNameResolvable[]) {
+		return (await this.getStreams({ userName: users.map(extractUserName) })).data;
+	}
+
+	/**
 	 * Retrieves the current stream for the given user ID.
 	 *
 	 * @param user The user ID to retrieve the stream for.
