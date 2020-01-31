@@ -66,17 +66,17 @@ class TwitchPrivateMessage extends PrivateMessage {
 		return parseEmotes(this._tags.get('emotes'));
 	}
 
-	parseEmotes() {
-		const foundEmotes: ParsedMessagePart[] = this._parseEmotePositions();
+	parseEmotes(overrideMessage?: string) {
+		const foundEmotes: ParsedMessagePart[] = this._parseEmotePositions(overrideMessage);
 
-		return this._fillTextPositions(this.params.message, foundEmotes);
+		return this._fillTextPositions(overrideMessage ? overrideMessage : this.params.message, foundEmotes);
 	}
 
-	parseEmotesAndBits(cheermotes: CheermoteList): ParsedMessagePart[] {
-		const messageText = this.params.message;
+	parseEmotesAndBits(cheermotes: CheermoteList, overrideMessage?: string): ParsedMessagePart[] {
+		const messageText = overrideMessage ? overrideMessage : this.params.message;
 		const foundCheermotes = cheermotes.parseMessage(messageText);
 		const foundEmotesAndCheermotes: ParsedMessagePart[] = [
-			...this._parseEmotePositions(),
+			...this._parseEmotePositions(overrideMessage),
 			...foundCheermotes.map(
 				(cheermote): ParsedMessageCheerPart => ({
 					type: 'cheer',
@@ -94,7 +94,8 @@ class TwitchPrivateMessage extends PrivateMessage {
 		return this._fillTextPositions(messageText, foundEmotesAndCheermotes);
 	}
 
-	private _parseEmotePositions() {
+	private _parseEmotePositions(overrideMessage?: string) {
+		const messageText = overrideMessage ? overrideMessage : this.params.message;
 		return [...this.emoteOffsets.entries()]
 			.flatMap(([emote, placements]) =>
 				placements.map(
@@ -108,7 +109,7 @@ class TwitchPrivateMessage extends PrivateMessage {
 							position: start,
 							length: end - start + 1,
 							id: emote,
-							name: utf8Substring(this.params.message, start, end + 1)
+							name: utf8Substring(messageText, start, end + 1)
 						};
 					}
 				)
