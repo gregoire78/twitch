@@ -1,4 +1,4 @@
-import { Cacheable, Cached } from '../../../Toolkit/Decorators/Cache';
+import { Cacheable, Cached } from '@d-fischer/cache-decorators';
 import BaseAPI from '../../BaseAPI';
 import Channel, { ChannelData } from '../Channel/Channel';
 import Stream, { StreamData } from '../Stream/Stream';
@@ -10,7 +10,7 @@ import Stream, { StreamData } from '../Stream/Stream';
  *
  * ## Example
  * ```ts
- * const client = await TwitchClient.withCredentials(clientId, accessToken);
+ * const client = TwitchClient.withCredentials(clientId, accessToken);
  * const channel = await client.kraken.search.searchStreams('Hearthstone');
  * ```
  */

@@ -126,7 +126,17 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/7132646?v=4",
       "profile": "https://alca.tv",
       "contributions": [
-        "question"
+        "question",
+        "code"
+      ]
+    },
+    {
+      "login": "aaronkchsu",
+      "name": "Aaron Kc Hsu",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10217999?v=4",
+      "profile": "http://blerp.com",
+      "contributions": [
+        "code"
       ]
     }
   ],

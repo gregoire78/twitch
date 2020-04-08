@@ -1,5 +1,5 @@
+import { Cacheable, Cached } from '@d-fischer/cache-decorators';
 import BaseAPI from '../../BaseAPI';
-import { Cacheable, Cached } from '../../../Toolkit/Decorators/Cache';
 import Team, { TeamData } from './Team';
 import TeamWithUsers from './TeamWithUsers';
 
@@ -10,7 +10,7 @@ import TeamWithUsers from './TeamWithUsers';
  *
  * ## Example
  * ```ts
- * const client = await TwitchClient.withCredentials(clientId, accessToken);
+ * const client = TwitchClient.withCredentials(clientId, accessToken);
  * const team = await client.kraken.teams.getTeamByName('staff');
  * ```
  */

@@ -6,6 +6,7 @@ import * as getRawBody from 'raw-body';
 import TwitchClient, {
 	extractUserId,
 	HelixBanEvent,
+	HelixExtensionTransaction,
 	HelixFollow,
 	HelixModeratorEvent,
 	HelixStream,
@@ -14,6 +15,7 @@ import TwitchClient, {
 	UserIdResolvable
 } from 'twitch';
 import BanEventSubscription from './Subscriptions/BanEventSubscription';
+import ExtensionTransactionSubscription from './Subscriptions/ExtensionTransactionSubscription';
 import FollowsFromUserSubscription from './Subscriptions/FollowsFromUserSubscription';
 import FollowsToUserSubscription from './Subscriptions/FollowsToUserSubscription';
 import ModeratorEventSubscription from './Subscriptions/ModeratorEventSubscription';
@@ -77,7 +79,7 @@ export default class WebHookListener {
 
 	private constructor(
 		private readonly _config: WebHookListenerComputedConfig,
-		/** @private */ readonly _twitchClient: TwitchClient
+		/** @private */ public readonly _twitchClient: TwitchClient
 	) {}
 
 	listen() {
@@ -196,7 +198,7 @@ export default class WebHookListener {
 
 	async subscribeToSubscriptionEvents(
 		user: UserIdResolvable,
-		handler: (subscription: HelixSubscriptionEvent) => void,
+		handler: (subscriptionEvent: HelixSubscriptionEvent) => void,
 		validityInSeconds = this._config.hookValidity
 	) {
 		const userId = extractUserId(user);
@@ -210,7 +212,7 @@ export default class WebHookListener {
 
 	async subscribeToBanEvents(
 		broadcaster: UserIdResolvable,
-		handler: (subscription: HelixBanEvent) => void,
+		handler: (banEvent: HelixBanEvent) => void,
 		user?: UserIdResolvable,
 		validityInSeconds = this._config.hookValidity
 	) {
@@ -226,7 +228,7 @@ export default class WebHookListener {
 
 	async subscribeToModeratorEvents(
 		broadcaster: UserIdResolvable,
-		handler: (subscription: HelixModeratorEvent) => void,
+		handler: (modEvent: HelixModeratorEvent) => void,
 		user?: UserIdResolvable,
 		validityInSeconds = this._config.hookValidity
 	) {
@@ -234,6 +236,18 @@ export default class WebHookListener {
 		const userId = user ? extractUserId(user) : undefined;
 
 		const subscription = new ModeratorEventSubscription(broadcasterId, handler, this, userId, validityInSeconds);
+		await subscription.start();
+		this._subscriptions.set(subscription.id, subscription);
+
+		return subscription;
+	}
+
+	async subscribeToExtensionTransactions(
+		extensionId: string,
+		handler: (transaction: HelixExtensionTransaction) => void,
+		validityInSeconds = this._config.hookValidity
+	) {
+		const subscription = new ExtensionTransactionSubscription(extensionId, handler, this, validityInSeconds);
 		await subscription.start();
 		this._subscriptions.set(subscription.id, subscription);
 

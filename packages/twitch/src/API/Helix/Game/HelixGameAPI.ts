@@ -1,7 +1,7 @@
 import { TwitchAPICallType } from '../../../TwitchClient';
 import BaseAPI from '../../BaseAPI';
 import HelixPaginatedRequest from '../HelixPaginatedRequest';
-import HelixPaginatedResult from '../HelixPaginatedResult';
+import { createPaginatedResult } from '../HelixPaginatedResult';
 import HelixPagination, { makePaginationQuery } from '../HelixPagination';
 import HelixResponse, { HelixPaginatedResponse } from '../HelixResponse';
 import HelixGame, { HelixGameData } from './HelixGame';
@@ -16,7 +16,7 @@ export type HelixGameFilterType = 'id' | 'name';
  *
  * ## Example
  * ```ts
- * const client = await TwitchClient.withCredentials(clientId, accessToken);
+ * const client = TwitchClient.withCredentials(clientId, accessToken);
  * const game = await client.helix.games.getGameByName('Hearthstone');
  * ```
  */
@@ -64,17 +64,14 @@ export default class HelixGameAPI extends BaseAPI {
 	 *
 	 * @param pagination Pagination info.
 	 */
-	async getTopGames(pagination?: HelixPagination): Promise<HelixPaginatedResult<HelixGame>> {
+	async getTopGames(pagination?: HelixPagination) {
 		const result = await this._client.callAPI<HelixPaginatedResponse<HelixGameData>>({
 			type: TwitchAPICallType.Helix,
 			url: 'games/top',
 			query: makePaginationQuery(pagination)
 		});
 
-		return {
-			data: result.data.map(data => new HelixGame(data, this._client)),
-			cursor: result.pagination && result.pagination.cursor
-		};
+		return createPaginatedResult(result, HelixGame, this._client);
 	}
 
 	/**

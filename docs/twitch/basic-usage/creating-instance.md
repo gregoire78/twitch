@@ -5,7 +5,7 @@ import TwitchClient from 'twitch';
 
 const clientId = '123abc';
 const accessToken = 'def456';
-const twitchClient = await TwitchClient.withCredentials(clientId, accessToken);
+const twitchClient = TwitchClient.withCredentials(clientId, accessToken);
 ```
 
 You can also have the client refresh the tokens automatically if necessary by supplying the `refreshConfig` parameter containing the necessary data:
@@ -17,12 +17,12 @@ const clientId = '123abc';
 const accessToken = 'def456';
 const clientSecret = 'foobar';
 const refreshToken = '999999';
-const twitchClient = await TwitchClient.withCredentials(clientId, accessToken, undefined, {clientSecret, refreshToken, onRefresh: (token: AccessToken) => {
+const twitchClient = TwitchClient.withCredentials(clientId, accessToken, undefined, {clientSecret, refreshToken, onRefresh: (token: AccessToken) => {
 	// do things with the new token data, e.g. save them in your database
 }});
 ```
 
-There's a more elaborated example on how to make auto refreshing work in the [twitch-chat-client documentation](https://d-fischer.github.io/twitch-chat-client/docs/examples/basic-bot.html).
+There's a more elaborated example on how to make auto refreshing work in the [twitch-chat-client documentation](/twitch-chat-client/docs/examples/basic-bot.html).
 
 If you don't need any client scopes, you may also create the client using client credentials:
 

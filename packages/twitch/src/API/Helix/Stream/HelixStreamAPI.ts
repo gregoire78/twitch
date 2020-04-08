@@ -1,11 +1,11 @@
+import { flatten } from '@d-fischer/shared-utils';
 import HTTPStatusCodeError from '../../../Errors/HTTPStatusCodeError';
 import StreamNotLiveError from '../../../Errors/StreamNotLiveError';
-import { flatten } from '../../../Toolkit/ArrayTools';
 import { extractUserId, extractUserName, UserIdResolvable, UserNameResolvable } from '../../../Toolkit/UserTools';
 import TwitchClient, { TwitchAPICallType } from '../../../TwitchClient';
 import BaseAPI from '../../BaseAPI';
 import HelixPaginatedRequest from '../HelixPaginatedRequest';
-import HelixPaginatedResult from '../HelixPaginatedResult';
+import HelixPaginatedResult, { createPaginatedResult } from '../HelixPaginatedResult';
 import HelixPagination, { makePaginationQuery } from '../HelixPagination';
 import HelixResponse, { HelixPaginatedResponse } from '../HelixResponse';
 import HelixStream, { HelixStreamData, HelixStreamType } from './HelixStream';
@@ -72,7 +72,7 @@ interface HelixStreamGetMarkersResult {
  *
  * ## Example
  * ```ts
- * const client = await TwitchClient.withCredentials(clientId, accessToken);
+ * const client = TwitchClient.withCredentials(clientId, accessToken);
  * const stream = await client.helix.streams.getStreamByUserId('125328655');
  * ```
  */
@@ -82,7 +82,7 @@ export default class HelixStreamAPI extends BaseAPI {
 	 *
 	 * @expandParams
 	 */
-	async getStreams(filter: HelixPaginatedStreamFilter = {}): Promise<HelixPaginatedResult<HelixStream>> {
+	async getStreams(filter: HelixPaginatedStreamFilter = {}) {
 		const result = await this._client.callAPI<HelixPaginatedResponse<HelixStreamData>>({
 			url: 'streams',
 			type: TwitchAPICallType.Helix,
@@ -97,10 +97,7 @@ export default class HelixStreamAPI extends BaseAPI {
 			}
 		});
 
-		return {
-			data: result.data.map(streamData => new HelixStream(streamData, this._client)),
-			cursor: result.pagination && result.pagination.cursor
-		};
+		return createPaginatedResult(result, HelixStream, this._client);
 	}
 
 	/**
@@ -196,15 +193,19 @@ export default class HelixStreamAPI extends BaseAPI {
 	/**
 	 * Creates a new stream marker.
 	 *
-	 * Only works while your stream is live.
+	 * Only works while the specified user's stream is live.
 	 */
-	async createStreamMarker() {
+	async createStreamMarker(userId: string, description?: string) {
 		try {
 			const result = await this._client.callAPI<HelixResponse<HelixStreamMarkerData>>({
 				url: 'streams/markers',
 				method: 'POST',
 				type: TwitchAPICallType.Helix,
-				scope: 'user:edit:broadcast'
+				scope: 'user:edit:broadcast',
+				query: {
+					user_id: userId,
+					description
+				}
 			});
 
 			return new HelixStreamMarker(result.data[0], this._client);

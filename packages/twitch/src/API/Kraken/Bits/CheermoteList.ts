@@ -1,7 +1,6 @@
-import TwitchClient from '../../../TwitchClient';
-import { NonEnumerable } from '../../../Toolkit/Decorators/NonEnumerable';
+import { indexBy, NonEnumerable, utf8Length } from '@d-fischer/shared-utils';
 import HellFreezesOverError from '../../../Errors/HellFreezesOverError';
-import { indexBy } from '../../../Toolkit/ObjectTools';
+import TwitchClient from '../../../TwitchClient';
 
 /**
  * The type of background a cheermote is supposed to appear on.
@@ -199,7 +198,7 @@ export default class CheermoteList {
 	 */
 	getCheermoteDisplayInfo(name: string, bits: number, format: Partial<CheermoteFormat> = {}): CheermoteDisplayInfo {
 		name = name.toLowerCase();
-		const cheermoteDefaults = this._client._config.cheermotes;
+		const cheermoteDefaults = this._client.cheermoteDefaults;
 		const fullOptions: CheermoteFormat = {
 			background: cheermoteDefaults.defaultBackground,
 			state: cheermoteDefaults.defaultState,
@@ -237,9 +236,8 @@ export default class CheermoteList {
 
 		const names = this.getPossibleNames();
 		// TODO fix this regex so it works in firefox, which does not support lookbehind
-		const re = new RegExp('(?<=^|\\s)([a-z]+)(\\d+)(?=\\s|$)', 'gi');
+		const re = new RegExp('(?<=^|\\s)([a-z0-9]+?)(\\d+)(?=\\s|$)', 'gi');
 		let match: RegExpExecArray | null;
-		// eslint-disable-next-line no-cond-assign
 		while ((match = re.exec(message))) {
 			const name = match[1].toLowerCase();
 			if (names.includes(name)) {
@@ -247,7 +245,7 @@ export default class CheermoteList {
 				result.push({
 					name,
 					amount,
-					position: match.index,
+					position: utf8Length(message.substr(0, match.index)),
 					length: match[0].length,
 					displayInfo: this.getCheermoteDisplayInfo(name, amount)
 				});

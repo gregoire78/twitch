@@ -1,10 +1,14 @@
 import { Message, MessageParam, MessageParamDefinition, MessageType } from 'ircv3';
 import ChatUser from '../../../ChatUser';
-import { parseEmotes } from '../../../Toolkit/ChatTools';
+import {
+	fillTextPositions,
+	ParsedMessagePart,
+	parseEmoteOffsets,
+	parseEmotePositions
+} from '../../../Toolkit/EmoteTools';
 
-/** @private */
 @MessageType('USERNOTICE')
-export default class UserNotice extends Message<UserNotice, 'userInfo' | 'emoteOffsets'> {
+export default class UserNotice extends Message<UserNotice> {
 	@MessageParamDefinition({
 		type: 'channel'
 	})
@@ -17,14 +21,26 @@ export default class UserNotice extends Message<UserNotice, 'userInfo' | 'emoteO
 	message!: MessageParam;
 
 	get userInfo() {
-		return new ChatUser(this._prefix!.nick, this._tags);
+		return new ChatUser(this._tags.get('login')!, this._tags);
+	}
+
+	get channelId() {
+		return this._tags.get('room-id') || null;
 	}
 
 	get emoteOffsets() {
-		if (!this._tags) {
-			return new Map();
+		return parseEmoteOffsets(this._tags?.get('emotes'));
+	}
+
+	parseEmotes() {
+		const messageText = this.params.message;
+
+		if (!messageText) {
+			return [];
 		}
 
-		return parseEmotes(this._tags.get('emotes'));
+		const foundEmotes: ParsedMessagePart[] = parseEmotePositions(messageText, this.emoteOffsets);
+
+		return fillTextPositions(messageText, foundEmotes);
 	}
 }

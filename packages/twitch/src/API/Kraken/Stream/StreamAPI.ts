@@ -1,5 +1,5 @@
+import { Cacheable, Cached } from '@d-fischer/cache-decorators';
 import { extractUserId, UserIdResolvable } from '../../../Toolkit/UserTools';
-import { Cacheable, Cached } from '../../../Toolkit/Decorators/Cache';
 import BaseAPI from '../../BaseAPI';
 import Stream, { StreamData, StreamDataWrapper, StreamType } from './Stream';
 
@@ -10,7 +10,7 @@ import Stream, { StreamData, StreamDataWrapper, StreamType } from './Stream';
  *
  * ## Example
  * ```ts
- * const client = await TwitchClient.withCredentials(clientId, accessToken);
+ * const client = TwitchClient.withCredentials(clientId, accessToken);
  * const stream = await client.kraken.streams.getStreamByChannel('125328655');
  * ```
  */
@@ -58,7 +58,7 @@ export default class StreamAPI extends BaseAPI {
 		}
 
 		if (languageCode) {
-			query.broadcaster_language = languageCode;
+			query.language = languageCode;
 		}
 
 		if (type) {

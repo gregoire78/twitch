@@ -1,7 +1,14 @@
 # Twitch.js
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+A set of libraries that aims to cover all of the existing Twitch APIs.
+
+- Query the Kraken v5 & Helix APIs
+- Build a chat bot
+- React to custom redemptions, subscriptions, follows and much more using PubSub and WebHooks
+- Do all this without caring about the expiry of your access tokens - **we can refresh them automatically**
 
 ## Installation
 
@@ -53,7 +60,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://twitter.com/Robinlemonz"><img src="https://avatars2.githubusercontent.com/u/12851394?v=4" width="100px;" alt=""/><br /><sub><b>Lewis Gibson</b></sub></a><br /><a href="https://github.com/d-fischer/twitch/commits?author=Robinlemon" title="Code">💻</a></td>
     <td align="center"><a href="http://ashuvidz.com"><img src="https://avatars3.githubusercontent.com/u/4967868?v=4" width="100px;" alt=""/><br /><sub><b>VyrtualSynthese</b></sub></a><br /><a href="https://github.com/d-fischer/twitch/commits?author=vyrtualsynthese" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Spidy88"><img src="https://avatars1.githubusercontent.com/u/1076168?v=4" width="100px;" alt=""/><br /><sub><b>Nick Ferraro</b></sub></a><br /><a href="https://github.com/d-fischer/twitch/commits?author=Spidy88" title="Code">💻</a></td>
-    <td align="center"><a href="https://alca.tv"><img src="https://avatars2.githubusercontent.com/u/7132646?v=4" width="100px;" alt=""/><br /><sub><b>Jacob Foster</b></sub></a><br /><a href="#question-AlcaDesign" title="Answering Questions">💬</a></td>
+    <td align="center"><a href="https://alca.tv"><img src="https://avatars2.githubusercontent.com/u/7132646?v=4" width="100px;" alt=""/><br /><sub><b>Jacob Foster</b></sub></a><br /><a href="#question-AlcaDesign" title="Answering Questions">💬</a> <a href="https://github.com/d-fischer/twitch/commits?author=AlcaDesign" title="Code">💻</a></td>
+    <td align="center"><a href="http://blerp.com"><img src="https://avatars2.githubusercontent.com/u/10217999?v=4" width="100px;" alt=""/><br /><sub><b>Aaron Kc Hsu</b></sub></a><br /><a href="https://github.com/d-fischer/twitch/commits?author=aaronkchsu" title="Code">💻</a></td>
   </tr>
 </table>
 
